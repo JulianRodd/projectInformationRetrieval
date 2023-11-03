@@ -1,0 +1,259 @@
+\begin{thebibliography}{}
+
+\bibitem [\protect \citeauthoryear {%
+Bejani%
+\ \BBA {} Ghatee%
+}{%
+Bejani%
+\ \BBA {} Ghatee%
+}{%
+{\protect \APACyear {2021}}%
+}]{%
+bejani2021systematic}
+\APACinsertmetastar {%
+bejani2021systematic}%
+\begin{APACrefauthors}%
+Bejani, M\BPBI M.%
+\BCBT {}\ \BBA {} Ghatee, M.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2021}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {A systematic review on overfitting control in shallow and deep neural networks} {A systematic review on overfitting control in shallow and deep neural networks}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Artificial Intelligence Review}{}{}{1--48}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Devlin%
+, Chang%
+, Lee%
+\BCBL {}\ \BBA {} Toutanova%
+}{%
+Devlin%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2018}}%
+}]{%
+devlin2018bert}
+\APACinsertmetastar {%
+devlin2018bert}%
+\begin{APACrefauthors}%
+Devlin, J.%
+, Chang, M\BHBI W.%
+, Lee, K.%
+\BCBL {}\ \BBA {} Toutanova, K.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2018}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Bert: Pre-training of deep bidirectional transformers for language understanding} {Bert: Pre-training of deep bidirectional transformers for language understanding}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{arXiv preprint arXiv:1810.04805}{}{}{}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Harris%
+\ \protect \BOthers {.}}{%
+Harris%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2020}}%
+}]{%
+harris2020array}
+\APACinsertmetastar {%
+harris2020array}%
+\begin{APACrefauthors}%
+Harris, C\BPBI R.%
+, Millman, K\BPBI J.%
+, van~der Walt, S\BPBI J.%
+, Gommers, R.%
+, Virtanen, P.%
+, Cournapeau, D.%
+\BDBL {}Oliphant, T\BPBI E.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2020}{{\APACmonth{09}}}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Array programming with {NumPy}} {Array programming with {NumPy}}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Nature}{585}{7825}{357--362}.
+\newblock
+\begin{APACrefURL} \url{https://doi.org/10.1038/s41586-020-2649-2} \end{APACrefURL}
+\newblock
+\begin{APACrefDOI} \doi{10.1038/s41586-020-2649-2} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+McKinney%
+\ \protect \BOthers {.}}{%
+McKinney%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2010}}%
+}]{%
+mckinney2010data}
+\APACinsertmetastar {%
+mckinney2010data}%
+\begin{APACrefauthors}%
+McKinney, W.%
+\BCBT {}\ \BOthersPeriod {.}
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2010}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Data structures for statistical computing in python} {Data structures for statistical computing in python}.{\BBCQ}
+\newblock
+\BIn{} \APACrefbtitle {Proceedings of the 9th Python in Science Conference} {Proceedings of the 9th python in science conference}\ (\BVOL~445, \BPGS\ 51--56).
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Pedregosa%
+\ \protect \BOthers {.}}{%
+Pedregosa%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2011}}%
+}]{%
+scikit-learn}
+\APACinsertmetastar {%
+scikit-learn}%
+\begin{APACrefauthors}%
+Pedregosa, F.%
+, Varoquaux, G.%
+, Gramfort, A.%
+, Michel, V.%
+, Thirion, B.%
+, Grisel, O.%
+\BDBL {}Duchesnay, E.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2011}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Scikit-learn: Machine Learning in {P}ython} {Scikit-learn: Machine learning in {P}ython}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Journal of Machine Learning Research}{12}{}{2825--2830}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Pfeiffer%
+\ \protect \BOthers {.}}{%
+Pfeiffer%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2020}}%
+}]{%
+pfeiffer2020}
+\APACinsertmetastar {%
+pfeiffer2020}%
+\begin{APACrefauthors}%
+Pfeiffer, J.%
+, R{\"u}ckl{\'e}, A.%
+, Poth, C.%
+, Kamath, A.%
+, Vuli{\'c}, I.%
+, Ruder, S.%
+\BDBL {}Gurevych, I.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2020}{{\APACmonth{10}}}{}.
+\newblock
+{\BBOQ}\APACrefatitle {{A}dapter{H}ub: A Framework for Adapting Transformers} {{A}dapter{H}ub: A framework for adapting transformers}.{\BBCQ}
+\newblock
+\BIn{} \APACrefbtitle {Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing: System Demonstrations} {Proceedings of the 2020 conference on empirical methods in natural language processing: System demonstrations}\ (\BPGS\ 46--54).
+\newblock
+\APACaddressPublisher{Online}{Association for Computational Linguistics}.
+\newblock
+\begin{APACrefURL} \url{https://aclanthology.org/2020.emnlp-demos.7} \end{APACrefURL}
+\newblock
+\begin{APACrefDOI} \doi{10.18653/v1/2020.emnlp-demos.7} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Soekhoe%
+, Putten%
+\BCBL {}\ \BBA {} Plaat%
+}{%
+Soekhoe%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2016}}%
+}]{%
+Soekhoe2016}
+\APACinsertmetastar {%
+Soekhoe2016}%
+\begin{APACrefauthors}%
+Soekhoe, D.%
+, Putten, P.%
+\BCBL {}\ \BBA {} Plaat, A.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2016}{10}{}.
+\newblock
+{\BBOQ}\APACrefatitle {On the Impact of Data Set Size in Transfer Learning Using Deep Neural Networks} {On the impact of data set size in transfer learning using deep neural networks}.{\BBCQ}
+\newblock
+\BIn{} (\BPG~50-60).
+\newblock
+\begin{APACrefDOI} \doi{10.1007/978-3-319-46349-0_5} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Thakur%
+, Reimers%
+, R{\"u}ckl{\'e}%
+, Srivastava%
+\BCBL {}\ \BBA {} Gurevych%
+}{%
+Thakur%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2021}}%
+}]{%
+thakur2021beir}
+\APACinsertmetastar {%
+thakur2021beir}%
+\begin{APACrefauthors}%
+Thakur, N.%
+, Reimers, N.%
+, R{\"u}ckl{\'e}, A.%
+, Srivastava, A.%
+\BCBL {}\ \BBA {} Gurevych, I.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2021}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Beir: A heterogenous benchmark for zero-shot evaluation of information retrieval models} {Beir: A heterogenous benchmark for zero-shot evaluation of information retrieval models}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{arXiv preprint arXiv:2104.08663}{}{}{}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Voorhees%
+\ \protect \BOthers {.}}{%
+Voorhees%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2021}}%
+}]{%
+voorhees2021trec}
+\APACinsertmetastar {%
+voorhees2021trec}%
+\begin{APACrefauthors}%
+Voorhees, E.%
+, Alam, T.%
+, Bedrick, S.%
+, Demner-Fushman, D.%
+, Hersh, W\BPBI R.%
+, Lo, K.%
+\BDBL {}Wang, L\BPBI L.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2021}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {TREC-COVID: constructing a pandemic information retrieval test collection} {Trec-covid: constructing a pandemic information retrieval test collection}.{\BBCQ}
+\newblock
+\BIn{} \APACrefbtitle {ACM SIGIR Forum} {Acm sigir forum}\ (\BVOL~54, \BPGS\ 1--12).
+\PrintBackRefs{\CurrentBib}
+
+\end{thebibliography}
