@@ -57,7 +57,7 @@ class Model:
 		predictions = []
 		actual_labels = []
 		with torch.no_grad():
-			for batch in data_loader:
+			for batch in tqdm(data_loader):
 				input_ids = batch['input_ids'].to(self.device)
 				attention_mask = batch['attention_mask'].to(self.device)
 				labels = batch['label'].to(self.device)
