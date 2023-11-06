@@ -81,18 +81,18 @@ class Model:
 	def predict_examples(self):
 		# Test sentiment prediction
 		test_text = "The movie was great and I really enjoyed the performances of the actors."
-		sentiment = self.predict_sentiment(test_text, self.model, self.tokenizer, self.device)
+		sentiment = self.predict_sentiment(test_text)
 		print("The movie was great and I really enjoyed the performances of the actors.")
 		print(f"Predicted sentiment: {sentiment}")
 
 		# Test sentiment prediction
 		test_text = "The movie was so bad and I would not recommend it to anyone."
-		sentiment = self.predict_sentiment(test_text, self.model, self.tokenizer, self.device)
+		sentiment = self.predict_sentiment(test_text)
 		print("The movie was so bad and I would not recommend it to anyone.")
 		print(f"Predicted sentiment: {sentiment}")
 
 		# Test sentiment prediction
 		test_text = "Worst movie of the year."
-		sentiment = self.predict_sentiment(test_text, self.model, self.tokenizer, self.device)
+		sentiment = self.predict_sentiment(test_text)
 		print("Worst movie of the year.")
 		print(f"Predicted sentiment: {sentiment}")
