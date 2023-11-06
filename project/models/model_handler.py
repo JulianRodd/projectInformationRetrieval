@@ -33,7 +33,7 @@ class Model:
 			print(f"Epoch {epoch + 1}/{num_epochs}")
 			self.run_epoch(train_dataloader, optimizer, scheduler)
 			if val_dataloader is not None:
-				accuracy, report = self.evaluate(self.model, val_dataloader, self.device)
+				accuracy, report = self.evaluate(val_dataloader)
 				print(f"Validation Accuracy: {accuracy:.4f}")
 				print(report)
 
