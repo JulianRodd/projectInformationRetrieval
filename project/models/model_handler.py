@@ -4,12 +4,11 @@ from torch import nn
 from transformers import BertTokenizer, AdamW, get_linear_schedule_with_warmup
 from sklearn.metrics import accuracy_score, classification_report
 from torch.utils.data import DataLoader
-
 from .bert import BERTClassifier
 
 
 class Model:
-	def __init__(self, model_name: str = 'bert-base-uncased', num_classes: int = 3, max_length: int = 128, freeze = True) -> None:
+	def __init__(self, model_name: str = 'sentence-transformers/msmarco-bert-base-dot-v5', num_classes: int = 3, max_length: int = 128, freeze = True) -> None:
 		self.bert_model_name = model_name
 		self.num_classes = num_classes
 		self.max_length = max_length
