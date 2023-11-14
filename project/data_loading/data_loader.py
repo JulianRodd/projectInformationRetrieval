@@ -20,11 +20,20 @@ class DataLoader:
         ), dataset_queries, left_on="corpus-id", right_on="_id", how="inner")
         print(self.dataset.describe())
         self.dataset.to_csv("dataset.csv")
+        
+    def print_groups_count(self):
+        # Count occurrences of each query-id
+        query_id_counts = self.dataset['query-id'].value_counts()
+
+        # Print each query-id group and its count
+        for query_id, count in query_id_counts.items():
+            print(f"Query ID {query_id} occurs {count} times")
+      
 
 
 dataPreprocessor = DataLoader()
 dataPreprocessor.load_data()
-
+dataPreprocessor.print_groups_count()
 print(dataPreprocessor.dataset)
 
 """
