@@ -1,3 +1,6 @@
+import os
+import glob
+
 import pandas as pd
 import torch
 import datasets
@@ -32,36 +35,46 @@ class DataLoader(torch.utils.data.Dataset):
         }
 
 def load_data(max_length, tokenizer):
-    trec_covid_documents = pd.DataFrame(datasets.load_dataset("BeIR/trec-covid", "corpus")["corpus"])
-    trec_covid_queries = pd.DataFrame(datasets.load_dataset("BeIR/trec-covid-generated-queries", "train")["train"])
-    trec_covid_qrels = pd.DataFrame(datasets.load_dataset("BeIR/trec-covid-qrels", "test")["test"])
+    data_dir = os.path.join(os.getcwd(), "project", "data")
+    trec_covid_csv_path = os.path.join(data_dir, "trec_covid_beir.csv")
     
-    trec_covid_query_document_pairs = pd.merge(
-        trec_covid_queries,
-        trec_covid_documents,
-        on=["_id", "text", "title"],
-        how="inner"
-    )
-    
-    trec_covid = pd.merge(
-        trec_covid_query_document_pairs,
-        trec_covid_qrels,
-        left_on="_id",
-        right_on="corpus-id",
-        how="inner"
-    )
-    
-    trec_covid.drop("corpus-id", axis=1, inplace=True)
-    trec_covid.rename(columns={
-        "_id": "doc_id",
-        "title": "doc_title",
-        "text": "doc",
-        "query-id": "query_id",
-        "score": "qrel_score"
-    }, inplace=True)
+    if os.path.exists(trec_covid_csv_path):
+        trec_covid = pd.read_csv(trec_covid_csv_path)
+    else:
+        trec_covid_documents = pd.DataFrame(datasets.load_dataset("BeIR/trec-covid", "corpus")["corpus"])
+        trec_covid_queries = pd.DataFrame(datasets.load_dataset("BeIR/trec-covid-generated-queries", "train")["train"])
+        trec_covid_qrels = pd.DataFrame(datasets.load_dataset("BeIR/trec-covid-qrels", "test")["test"])
+        
+        trec_covid_query_document_pairs = pd.merge(
+            trec_covid_queries,
+            trec_covid_documents,
+            on=["_id", "text", "title"],
+            how="inner"
+        )
+        
+        trec_covid = pd.merge(
+            trec_covid_query_document_pairs,
+            trec_covid_qrels,
+            left_on="_id",
+            right_on="corpus-id",
+            how="inner"
+        )
+        
+        trec_covid.drop("corpus-id", axis=1, inplace=True)
+        trec_covid.rename(columns={
+            "_id": "doc_id",
+            "title": "doc_title",
+            "text": "doc",
+            "query-id": "query_id",
+            "score": "qrel_score"
+        }, inplace=True)
+        
+        trec_covid.to_csv(trec_covid_csv_path)
     
     #TODO: SPLIT TRAIN/TEST SO THAT ALL QUERIES AND DOCUMENTS APPEAR ONLY IN THE TRAIN OR ONLY IN THE TEST SET
     #TODO: FEED TRAIN/TEST SETS INTO THE DATALOADER CLASS
+    
+    return train_test_split(trec_covid["query_id"], trec_covid["doc_id"])
 
 
 load_data(None, None)
