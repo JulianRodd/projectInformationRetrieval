@@ -1,6 +1,9 @@
 \documentclass{IEEEtran}
+
 \usepackage{graphicx} % Required for inserting images
-\usepackage{apacite}
+
+\usepackage[backend=biber]{biblatex}
+\addbibresource{refs.bib}
 
 \title{Information Retrieval Project Proposal \\ Domain Adaptation using Parameter Efficient Fine Tuning (PEFT)}
 \author{Janneke Nouwen (s1101750), Daan Brugmans (s1080742), Julian Roddeman (s1080491)}
@@ -36,7 +39,6 @@ Python 3.10 will be used to test plain BERT and BERT fine-tuned with PEFT. To ap
     \label{fig:my_image}
 \end{figure}
 
-\bibliographystyle{apacite}
-\bibliography{refs.bib}
+\printbibliography
 
 \end{document}
