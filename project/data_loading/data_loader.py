@@ -1,11 +1,8 @@
 import os
-import glob
 
 import pandas as pd
 import torch
 import datasets
-
-from sklearn.model_selection import train_test_split
 
 class DataLoader(torch.utils.data.Dataset):
     def __init__(self, texts, labels, max_length, tokenizer):
@@ -39,7 +36,7 @@ def load_data(max_length, tokenizer):
     trec_covid_csv_path = os.path.join(data_dir, "trec_covid_beir.csv")
     
     if os.path.exists(trec_covid_csv_path):
-        trec_covid = pd.read_csv(trec_covid_csv_path)
+        trec_covid = pd.read_csv(trec_covid_csv_path, index_col="doc_query_key")
     else:
         trec_covid_documents = pd.DataFrame(datasets.load_dataset("BeIR/trec-covid", "corpus")["corpus"])
         trec_covid_queries = pd.DataFrame(datasets.load_dataset("BeIR/trec-covid-generated-queries", "train")["train"])
@@ -61,6 +58,7 @@ def load_data(max_length, tokenizer):
         )
         
         trec_covid.drop("corpus-id", axis=1, inplace=True)
+        trec_covid.index.name = "doc_query_key"
         trec_covid.rename(columns={
             "_id": "doc_id",
             "title": "doc_title",
@@ -70,11 +68,4 @@ def load_data(max_length, tokenizer):
         }, inplace=True)
         
         trec_covid.to_csv(trec_covid_csv_path)
-    
-    #TODO: SPLIT TRAIN/TEST SO THAT ALL QUERIES AND DOCUMENTS APPEAR ONLY IN THE TRAIN OR ONLY IN THE TEST SET
-    #TODO: FEED TRAIN/TEST SETS INTO THE DATALOADER CLASS
-    
-    return train_test_split(trec_covid["query_id"], trec_covid["doc_id"])
-
-
-load_data(None, None)
+        
