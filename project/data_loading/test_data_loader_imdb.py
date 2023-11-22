@@ -20,7 +20,7 @@ class TextClassificationDataset(Dataset):
 
 
 def load_imdb_data(max_length, tokenizer):
-    data_file = "../test_data/IMDB Dataset.csv"
+    data_file = "project/test_data/IMDB Dataset.csv"
     df = pd.read_csv(data_file)
     texts = df['review'].tolist()
     labels = [1 if sentiment == "positive" else 0 for sentiment in df['sentiment'].tolist()]
