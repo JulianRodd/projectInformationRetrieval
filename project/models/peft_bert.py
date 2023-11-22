@@ -1,18 +1,30 @@
 from torch import nn
-from transformers import LoraConfig, LoraForSequenceClassification
+from peft import LoraConfig, get_peft_model
+from models.bert import BERTClassifier
 
-class PEFTBERTClassifier(nn.Module):
+def print_trainable_parameters(model):
+    trainable_params = 0
+    all_param = 0
+    for _, param in model.named_parameters():
+        all_param += param.numel()
+        if param.requires_grad:
+            trainable_params += param.numel()
+    print(
+        f"trainable params: {trainable_params} || all params: {all_param} || trainable%: {100 * trainable_params / all_param:.2f}"
+    )
+
+
+class PEFTBERTClassifier(BERTClassifier):
     def __init__(self, bert_model_name, num_classes):
-        super(PEFTBERTClassifier, self).__init__()
-        lora_config = LoraConfig.from_pretrained(bert_model_name, lora_alpha=16, lora_r=8)
-        self.bert = LoraForSequenceClassification.from_pretrained(bert_model_name, config=lora_config, num_labels=num_classes)
-
-        # Freeze
-        for name, param in self.bert.named_parameters():
-            if 'lora' not in name:
-                param.requires_grad = False
-
-    def forward(self, input_ids, attention_mask):
-        outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)
-        logits = outputs.logits
-        return logits
+        BERTClassifier.__init__(self, bert_model_name, num_classes=num_classes)
+        config = LoraConfig(
+            r=16,
+            lora_alpha=16,
+            target_modules=["query", "value"],
+            lora_dropout=0.1,
+            bias="none",
+            modules_to_save=["classifier"],
+        )
+       
+        self.bert = get_peft_model(self.bert, peft_config=config)
+        print_trainable_parameters(self.bert)

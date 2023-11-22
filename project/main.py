@@ -2,8 +2,11 @@ import torch
 from models.model_handler import Model
 from data_loading.data_loader import CovidDataLoader, DataObj
 from torch.utils.data import DataLoader, TensorDataset
+from models.peft_bert import PEFTBERTClassifier
+from models.bert import BERTClassifier
 
 bert = Model()
+peft_bert = Model(PEFTBERTClassifier, device = "mps", run_name="peftbert")
 
 dataPreprocessor = CovidDataLoader()
 dataPreprocessor.load_data()
@@ -29,10 +32,6 @@ labels_tensor = torch.tensor(train_set["qrel_score"])
 dataset = TensorDataset(query_tensor, doc_tensor, labels_tensor)
 batch_size = 8
 train_dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
-
-# train_dataloader = DataLoader(train_set, batch_size=8, shuffle=True)
-# val_dataloader = DataLoader(val_set, batch_size=8, shuffle=True)
-# test_dataloader = DataLoader(test_set, batch_size=8, shuffle=True)
 
 bert.train(train_dataloader=train_dataloader, learning_rate=2e-5, num_epochs=1)
 # bert.train(train_dataloader=train_dataloader, learning_rate=2e-5, num_epochs=1, val_dataloader=val_dataloader)
