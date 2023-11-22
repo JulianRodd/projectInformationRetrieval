@@ -483,3 +483,4 @@ TSWLatexianTemp*
 
 # glossaries
 *.glstex
+runs/*

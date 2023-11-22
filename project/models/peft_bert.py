@@ -22,7 +22,7 @@ class PEFTBERTClassifier(BERTClassifier):
             lora_alpha=16,
             target_modules=["query", "value"],
             lora_dropout=0.1,
-            bias="none",
+            bias="lora_only",
             modules_to_save=["classifier"],
         )
        
