@@ -12,12 +12,14 @@ bert = Model(BERTClassifier, run_name="frozen_bert")
 peft_bert = Model(PEFTBERTClassifier, run_name="peft_bert")
 
 data_dir = os.path.join(os.getcwd(), "project", "data")
-trec_covid_csv_path = os.path.join(data_dir, "trec_covid_beir.csv")
-# trec_covid_csv_path = os.path.join(data_dir, "dummy_data.csv")
+# trec_covid_csv_path = os.path.join(data_dir, "trec_covid_beir.csv")
+trec_covid_csv_path = os.path.join(data_dir, "dummy_data.csv")
 
 dataPreprocessor = CovidDataLoader()
 dataPreprocessor.load_data(trec_covid_csv_path=trec_covid_csv_path)
 train_set, val_set, test_set = dataPreprocessor.split_data(train=0.6, val=0.2, test=0.2)
+train_dataloader = dataPreprocessor.make_dataloader(train_set, shuffle=True, batch_size=16) 
+val_dataloader = dataPreprocessor.make_dataloader(val_set, shuffle=True, batch_size=16) 
 
 print(len(dataPreprocessor.dataset))
 print(len(train_set))
@@ -37,17 +39,7 @@ print(
 # doc_tensor = torch.tensor(doc_emb)
 # labels_tensor = torch.tensor(train_set["qrel_score"])
 
-train_input_examples = []
-for query, doc, label in zip(train_set["query"], train_set["doc"], train_set["qrel_score"]):
-    train_input_examples.append(InputExample(texts=[query, doc], label=label))
-train_dataloader = DataLoader(train_input_examples, shuffle=True, batch_size=16)
-
-# Create DataLoader
-dataset = TensorDataset(query_tensor, doc_tensor, labels_tensor)
-batch_size = 8
-train_dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
-
-bert.train(train_dataloader=train_dataloader, learning_rate=2e-5, num_epochs=1)
-# bert.train(train_dataloader=train_dataloader, learning_rate=2e-5, num_epochs=1, val_dataloader=val_dataloader)
-# bert.evaluate(val_dataloader)
-# bert.predict_examples()
+# bert.train(train_dataloader=train_dataloader, learning_rate=2e-5, num_epochs=1)
+bert.train(train_dataloader=train_dataloader, learning_rate=2e-5, num_epochs=1, val_dataloader=val_dataloader)
+bert.evaluate(val_dataloader)
+bert.predict_examples()

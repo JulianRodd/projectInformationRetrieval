@@ -5,7 +5,8 @@ import numpy as np
 import random
 import math
 import os
-from datasets import load_dataset, concatenate_datasets
+from torch.utils.data import DataLoader
+from sentence_transformers import InputExample
 
 
 class DataObj(torch.utils.data.Dataset):
@@ -43,9 +44,9 @@ class CovidDataLoader:
       if os.path.exists(trec_covid_csv_path):
           self.dataset = pd.read_csv(trec_covid_csv_path, index_col="doc_query_key")
       else:
-          trec_covid_documents = pd.DataFrame(datasets.load_dataset("BeIR/trec-covid", "corpus")["corpus"])
-          trec_covid_queries = pd.DataFrame(datasets.load_dataset("BeIR/trec-covid-generated-queries", "train")["train"])
-          trec_covid_qrels = pd.DataFrame(datasets.load_dataset("BeIR/trec-covid-qrels", "test")["test"])
+          trec_covid_documents = pd.DataFrame(datasets.load_dataset("BeIR/trec-covid", "corpus", cache_dir='./data/cache')["corpus"])
+          trec_covid_queries = pd.DataFrame(datasets.load_dataset("BeIR/trec-covid-generated-queries", "train", cache_dir='./data/cache')["train"])
+          trec_covid_qrels = pd.DataFrame(datasets.load_dataset("BeIR/trec-covid-qrels", "test", cache_dir='./data/cache')["test"])
 
           trec_covid_query_document_pairs = pd.merge(
               trec_covid_queries,
@@ -61,18 +62,20 @@ class CovidDataLoader:
               right_on="corpus-id",
               how="inner"
           )
-
+         
           self.dataset.drop("corpus-id", axis=1, inplace=True)
           self.dataset.index.name = "doc_query_key"
           self.dataset.rename(columns={
-
               "_id": "doc_id",
               "title": "doc_title",
               "text": "doc",
               "query-id": "query_id",
               "score": "qrel_score"
           }, inplace=True)
-
+          self.dataset['doc'] = self.dataset.apply(lambda row: row['doc_title'] + ' ' + row['doc'] 
+                          if pd.notnull(row['doc_title']) and pd.notnull(row['doc']) 
+                          else row['doc_title'] if pd.notnull(row['doc_title']) 
+                          else row['doc'], axis=1)
           self.dataset.to_csv(trec_covid_csv_path)
 
     def split_data(self, train, val, test):
@@ -99,3 +102,10 @@ class CovidDataLoader:
         val_set = self.dataset[self.dataset['query_id'].isin(val_queries)][self.dataset['doc_id'].isin(val_texts)]
         test_set = self.dataset[self.dataset['query_id'].isin(test_queries)][self.dataset['doc_id'].isin(test_texts)]
         return train_set, val_set, test_set
+    
+    def make_dataloader(self, df: pd.DataFrame, shuffle=True, batch_size=16):
+        input_examples = []
+        for query, doc, label in zip(df["query"], df["doc"], df["qrel_score"]):
+            input_examples.append(InputExample(texts=[query, doc], label=label))
+        return DataLoader(input_examples, shuffle=shuffle, batch_size=batch_size)
+
