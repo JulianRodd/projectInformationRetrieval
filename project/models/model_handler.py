@@ -4,7 +4,7 @@ from torch import nn
 from transformers import BertTokenizer, AdamW, get_linear_schedule_with_warmup
 from sklearn.metrics import accuracy_score, classification_report
 from torch.utils.data import DataLoader
-from bert import BERTClassifier
+from .bert import BERTClassifier
 
 
 class Model:
