@@ -39,11 +39,7 @@ class CovidDataLoader:
     def __init__(self) -> None:
         self.dataset = None
 
-    def load_data(self):
-      data_dir = os.path.join(os.getcwd(), "project", "data")
-    #   trec_covid_csv_path = os.path.join(data_dir, "trec_covid_beir.csv")
-      trec_covid_csv_path = os.path.join(data_dir, "dummy_data.csv")
-
+    def load_data(self, trec_covid_csv_path):
       if os.path.exists(trec_covid_csv_path):
           self.dataset = pd.read_csv(trec_covid_csv_path, index_col="doc_query_key")
       else:
@@ -69,6 +65,7 @@ class CovidDataLoader:
           self.dataset.drop("corpus-id", axis=1, inplace=True)
           self.dataset.index.name = "doc_query_key"
           self.dataset.rename(columns={
+
               "_id": "doc_id",
               "title": "doc_title",
               "text": "doc",

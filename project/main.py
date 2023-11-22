@@ -1,15 +1,22 @@
+import os
 import torch
 from models.model_handler import Model
 from data_loading.data_loader import CovidDataLoader, DataObj
 from torch.utils.data import DataLoader, TensorDataset
 from models.peft_bert import PEFTBERTClassifier
 from models.bert import BERTClassifier
+from sentence_transformers import InputExample
 
-bert = Model()
-peft_bert = Model(PEFTBERTClassifier, device = "mps", run_name="peftbert")
+
+bert = Model(BERTClassifier, run_name="frozen_bert")
+peft_bert = Model(PEFTBERTClassifier, run_name="peft_bert")
+
+data_dir = os.path.join(os.getcwd(), "project", "data")
+trec_covid_csv_path = os.path.join(data_dir, "trec_covid_beir.csv")
+# trec_covid_csv_path = os.path.join(data_dir, "dummy_data.csv")
 
 dataPreprocessor = CovidDataLoader()
-dataPreprocessor.load_data()
+dataPreprocessor.load_data(trec_covid_csv_path=trec_covid_csv_path)
 train_set, val_set, test_set = dataPreprocessor.split_data(train=0.6, val=0.2, test=0.2)
 
 print(len(dataPreprocessor.dataset))
@@ -20,13 +27,20 @@ print(
     f"lost rows 😦 ): {len(dataPreprocessor.dataset) - len(train_set) - len(test_set) - len(val_set)}"
 )
 
-# tokenized_queries = bert.tokenizer.tokenize(train_set["query"])
+# tokenized_queries_train = bert.tokenizer.batch_encode_plus(list(train_set["query"]))
+# tokenized_queries_train = bert.tokenizer.batch_encode_plus(list(train_set["doc"]))
 # tokenized_docs = bert.tokenizer.tokenize(train_set["doc"])
-query_emb = bert.model.bert.encode(list(train_set["query"]))
-doc_emb = bert.model.bert.encode(list(train_set["doc"]))
-query_tensor = torch.tensor(query_emb)
-doc_tensor = torch.tensor(doc_emb)
-labels_tensor = torch.tensor(train_set["qrel_score"])
+
+# query_emb = bert.model.bert.encode(list(train_set["query"]))
+# doc_emb = bert.model.bert.encode(list(train_set["doc"]))
+# query_tensor = torch.tensor(query_emb)
+# doc_tensor = torch.tensor(doc_emb)
+# labels_tensor = torch.tensor(train_set["qrel_score"])
+
+train_input_examples = []
+for query, doc, label in zip(train_set["query"], train_set["doc"], train_set["qrel_score"]):
+    train_input_examples.append(InputExample(texts=[query, doc], label=label))
+train_dataloader = DataLoader(train_input_examples, shuffle=True, batch_size=16)
 
 # Create DataLoader
 dataset = TensorDataset(query_tensor, doc_tensor, labels_tensor)
