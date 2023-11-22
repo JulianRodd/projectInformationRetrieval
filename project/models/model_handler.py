@@ -5,10 +5,12 @@ from transformers import BertTokenizer, get_linear_schedule_with_warmup
 from sklearn.metrics import accuracy_score, classification_report
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
+
+
 class Model:
     def __init__(
         self,
-        Classifier,
+        classifier,
         device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
         model_name: str = "sentence-transformers/msmarco-bert-base-dot-v5",
         run_name: str = "default",
@@ -22,7 +24,7 @@ class Model:
 
         self.tokenizer = BertTokenizer.from_pretrained(self.bert_model_name)
         self.device = device
-        self.model = Classifier(self.bert_model_name, num_classes).to(self.device)
+        self.model = classifier(self.bert_model_name, num_classes).to(self.device)
 
         if freeze:
             for param in self.model.bert.parameters():

@@ -35,13 +35,14 @@ class DataObj(torch.utils.data.Dataset):
             'label': torch.tensor(label)
         }
 
-class DataLoader:
+class CovidDataLoader:
     def __init__(self) -> None:
         self.dataset = None
 
     def load_data(self):
       data_dir = os.path.join(os.getcwd(), "project", "data")
-      trec_covid_csv_path = os.path.join(data_dir, "trec_covid_beir.csv")
+    #   trec_covid_csv_path = os.path.join(data_dir, "trec_covid_beir.csv")
+      trec_covid_csv_path = os.path.join(data_dir, "dummy_data.csv")
 
       if os.path.exists(trec_covid_csv_path):
           self.dataset = pd.read_csv(trec_covid_csv_path, index_col="doc_query_key")
@@ -101,29 +102,3 @@ class DataLoader:
         val_set = self.dataset[self.dataset['query_id'].isin(val_queries)][self.dataset['doc_id'].isin(val_texts)]
         test_set = self.dataset[self.dataset['query_id'].isin(test_queries)][self.dataset['doc_id'].isin(test_texts)]
         return train_set, val_set, test_set
-
-      
-def check_unique(df_1, df_2):
-    queries_1 = set(df_1["query-id"])
-    queries_2 = set(df_2["query-id"])
-    texts_1 = set(df_1["text_y"])
-    texts_2 = set(df_2["text_y"])
-    query_intersect = queries_1.intersection(queries_2)
-    text_intersect = texts_1.intersection(texts_2)
-    print(len(query_intersect))
-    print(len(text_intersect))
-    
-
-dataPreprocessor = DataLoader()
-dataPreprocessor.load_data()
-train_set, val_set, test_set = dataPreprocessor.split_data(train=0.6, val=0.2, test=0.2)
-print(f"Len train set: {len(train_set)}")
-print(train_set.head())
-print(f"Len val set: {len(val_set)}")
-print(val_set.head())
-print(f"Len test set: {len(test_set)}")
-print(test_set.head())
-
-check_unique(train_set, val_set)
-check_unique(val_set, test_set)
-check_unique(train_set, test_set)

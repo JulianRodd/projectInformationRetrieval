@@ -1,5 +1,4 @@
-project/data/*
-
+project/data
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
