@@ -12,8 +12,8 @@ bert = Model(BERTClassifier, run_name="frozen_bert")
 peft_bert = Model(PEFTBERTClassifier, run_name="peft_bert")
 
 data_dir = os.path.join(os.getcwd(), "project", "data")
-# trec_covid_csv_path = os.path.join(data_dir, "trec_covid_beir.csv")
-trec_covid_csv_path = os.path.join(data_dir, "dummy_data.csv")
+trec_covid_csv_path = os.path.join(data_dir, "trec_covid_beir.csv")
+# trec_covid_csv_path = os.path.join(data_dir, "dummy_data.csv")
 
 dataPreprocessor = CovidDataLoader()
 dataPreprocessor.load_data(trec_covid_csv_path=trec_covid_csv_path)

@@ -76,6 +76,9 @@ class CovidDataLoader:
                           if pd.notnull(row['doc_title']) and pd.notnull(row['doc']) 
                           else row['doc_title'] if pd.notnull(row['doc_title']) 
                           else row['doc'], axis=1)
+          self.dataset.dropna(subset=['doc', 'query', 'qrel_score'])
+          self.dataset = self.dataset[self.dataset['doc'] != '']
+          self.dataset = self.dataset[self.dataset['query'] != '']
           self.dataset.to_csv(trec_covid_csv_path)
 
     def split_data(self, train, val, test):
