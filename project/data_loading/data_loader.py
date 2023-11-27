@@ -109,6 +109,6 @@ class CovidDataLoader:
     def make_dataloader(self, df: pd.DataFrame, shuffle=True, batch_size=16):
         input_examples = []
         for query, doc, label in zip(df["query"], df["doc"], df["qrel_score"]):
+            # input_examples.append(InputExample(texts=[query, doc]))
             input_examples.append(InputExample(texts=[query, doc], label=label))
         return DataLoader(input_examples, shuffle=shuffle, batch_size=batch_size)
-
