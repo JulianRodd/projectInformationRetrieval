@@ -4,7 +4,7 @@ from torch import nn
 from transformers import BertTokenizer, get_linear_schedule_with_warmup
 from sklearn.metrics import accuracy_score, classification_report
 from torch.utils.data import DataLoader
-from sentence_transformers import losses
+from .softmax_loss_tensorboard import SoftmaxLossTensorboard
 from sentence_transformers.evaluation import LabelAccuracyEvaluator
 from torch.utils.tensorboard import SummaryWriter
 
@@ -25,16 +25,15 @@ class ModelHandler:
         self.bert_model_name = model_name
         self.num_classes = num_classes
         self.max_length = max_length
+        self.writer = SummaryWriter(f'runs/{model_name}/{run_name}')
 
         self.tokenizer = BertTokenizer.from_pretrained(self.bert_model_name)
         self.device = device
-        self.model: BERTClassifier | PEFTBERTClassifier = classifier(self.bert_model_name, num_classes).to(self.device)
+        self.model: BERTClassifier | PEFTBERTClassifier = classifier(bert_model_name=self.bert_model_name, num_classes=num_classes, writer=self.writer).to(self.device)
 
         if freeze:
             for param in self.model.bert.parameters():
                 param.requires_grad = False
-
-        # self.writer = SummaryWriter(f'runs/{model_name}/{run_name}')
 
     def train(
         self,
@@ -43,8 +42,9 @@ class ModelHandler:
         num_epochs: int = 4,
         val_dataloader=DataLoader | None,
     ):
-        train_loss = losses.SoftmaxLoss(
+        train_loss = SoftmaxLossTensorboard(
             model=self.model, 
+            writer=self.writer,
             num_labels=self.num_classes, 
             sentence_embedding_dimension=self.model.hidden_size,
             concatenation_sent_rep=self.model.concatenation_args["concatenation_sent_rep"],
@@ -59,6 +59,8 @@ class ModelHandler:
             # learning_rate=learning_rate, 
             evaluator=evaluator,
 		)
+
+        self.writer.close()
         # optimizer = torch.optim.AdamW(self.model.parameters(), lr=learning_rate)
         # total_steps = len(train_dataloader) * num_epochs
         # scheduler = get_linear_schedule_with_warmup(

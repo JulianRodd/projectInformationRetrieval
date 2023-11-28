@@ -27,7 +27,7 @@ print(
     f"lost rows 😦 ): {len(dataPreprocessor.dataset) - len(train_set) - len(test_set) - len(val_set)}"
 )
 
-bert.train(train_dataloader=train_dataloader, learning_rate=2e-5, num_epochs=1, val_dataloader=val_dataloader)
-peft_bert.train(train_dataloader=train_dataloader, learning_rate=2e-5, num_epochs=1, val_dataloader=val_dataloader)
+peft_bert.train(train_dataloader=train_dataloader, learning_rate=2e-5, num_epochs=10, val_dataloader=val_dataloader)
+bert.train(train_dataloader=train_dataloader, learning_rate=2e-5, num_epochs=10, val_dataloader=val_dataloader)
 # bert.evaluate(val_dataloader)
 # bert.predict_examples()

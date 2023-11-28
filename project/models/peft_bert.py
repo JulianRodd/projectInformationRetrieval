@@ -15,8 +15,8 @@ def print_trainable_parameters(model):
 
 
 class PEFTBERTClassifier(BERTClassifier):
-    def __init__(self, bert_model_name, num_classes):
-        BERTClassifier.__init__(self, bert_model_name, num_classes=num_classes)
+    def __init__(self, writer, bert_model_name, num_classes):
+        BERTClassifier.__init__(self, writer=writer, bert_model_name=bert_model_name, num_classes=num_classes)
         config = LoraConfig(
             r=16,
             lora_alpha=16,

@@ -1,14 +1,15 @@
 import torch
 from torch import nn
 from sentence_transformers import SentenceTransformer
+from .sentence_transformer_tensorboard import SentenceTransformerTensorboard
 
-
-#TODO tensorboard support. Inherit from SentenceTransformer and change SentenceTransformer_eval_during_training
+#TODO tensorboard support. Inherit from SentenceTransformer and change SentenceTransformer._eval_during_training
 class BERTClassifier(nn.Module):
     def __init__(
             self, 
             bert_model_name, 
             num_classes, 
+            writer,
             concatenation_args: dict = {
                 "concatenation_sent_rep": True,
                 "concatenation_sent_difference": True,
@@ -16,7 +17,7 @@ class BERTClassifier(nn.Module):
             }
     ):
         super(BERTClassifier, self).__init__()
-        self.bert = SentenceTransformer(bert_model_name)
+        self.bert = SentenceTransformerTensorboard(model_name_or_path=bert_model_name, writer=writer)
         self.dropout = nn.Dropout(0.1)
         self.hidden_size = self.bert[0].auto_model.base_model.config.hidden_size
         self.fc = nn.Linear(self.hidden_size, num_classes)
@@ -32,11 +33,11 @@ class BERTClassifier(nn.Module):
 
     def forward(self, *args, **kwargs):
         labels_in_kwargs = "labels" in kwargs
-        labels = kwargs.pop("labels", None)
         if labels_in_kwargs:
             outputs, logits = self.get_sentence_embedding(*args, **kwargs)
             return outputs, logits
         else:
+            labels = kwargs.pop("labels", None)
             outputs = self.bert(*args, **kwargs)
             sentence_embedding = outputs["sentence_embedding"]
             x = self.dropout(sentence_embedding)
@@ -44,6 +45,8 @@ class BERTClassifier(nn.Module):
             return outputs
 
     def get_sentence_embedding(self, *args, **kwargs):
+        labels = kwargs.pop("labels", None)
+
         outputs = [self.bert(inputs) for inputs in args[0]]
         rep_a, rep_b = [rep['sentence_embedding'] for rep in outputs]
 
@@ -61,5 +64,5 @@ class BERTClassifier(nn.Module):
         features = torch.cat(vectors_concat, 1)
 
         logits = self.sent_embed_linear(features)
-        #TODO check if this output shape is equal to that of the normal self.bert output
+
         return outputs, logits
