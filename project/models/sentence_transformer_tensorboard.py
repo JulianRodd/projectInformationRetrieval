@@ -36,4 +36,4 @@ class SentenceTransformerTensorboard(SentenceTransformer):
                 if save_best_model:
                     self.save(output_path)
 		
-        self.writer.add_scalar('Validation/Accuracy', score, epoch)
+        self.writer.add_scalar('Validation/Accuracy', score, steps)

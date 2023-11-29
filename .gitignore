@@ -1,6 +1,7 @@
 project/data
 saved_models
 data
+logs
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -25,7 +25,7 @@ class SoftmaxLossTensorboard(SoftmaxLoss):
 		forward_super_output = super().forward(sentence_features, labels)
 		if labels is not None:
 			loss = forward_super_output
-			self.writer.add_scalar('Train/Loss', loss, self.loss_steps)
+			self.writer.add_scalar('Train/Loss', float(loss.detach().cpu()), self.loss_steps)
 			self.loss_steps += 1
 
-		return forward_super_output
+		return forward_super_output 

@@ -79,10 +79,12 @@ class CovidDataLoader:
           self.dataset.dropna(subset=['doc', 'query', 'qrel_score'])
           self.dataset = self.dataset[self.dataset['doc'] != '']
           self.dataset = self.dataset[self.dataset['query'] != '']
+          self.dataset = self.dataset[self.dataset['qrel_score'].isin([0, 1, 2])]
+          if not os.path.exists("/".join(trec_covid_csv_path.split("/")[:-1])):
+              os.makedirs("/".join(trec_covid_csv_path.split("/")[:-1]))
           self.dataset.to_csv(trec_covid_csv_path)
 
     def split_data(self, train, val, test):
-        random.seed(42)
         querie_id_set = list(self.dataset["query_id"].unique())
         train_interval_queries = [0, math.floor(len(querie_id_set)*train)]
         val_interval_queries = [math.floor(len(querie_id_set)*train), math.floor(len(querie_id_set)*(val+train))]

@@ -39,6 +39,8 @@ class ModelHandler:
         self,
         train_dataloader: DataLoader,
         learning_rate: float = 2e-5,
+        train_evaluation_steps: int = 500,
+        val_evaluation_steps: int = 500,
         num_epochs: int = 4,
         val_dataloader=DataLoader | None,
     ):
@@ -50,14 +52,16 @@ class ModelHandler:
             concatenation_sent_rep=self.model.concatenation_args["concatenation_sent_rep"],
             concatenation_sent_difference=self.model.concatenation_args["concatenation_sent_difference"],
             concatenation_sent_multiplication=self.model.concatenation_args["concatenation_sent_multiplication"])        
-        evaluator = LabelAccuracyEvaluator(val_dataloader, name='val', softmax_model=self.model)
+        
+        #TODO make more evaluators. Train scores and different metrics
+        val_evaluator = LabelAccuracyEvaluator(val_dataloader, name='val', softmax_model=self.model)
 
         self.model.bert.fit(
             train_objectives=[(train_dataloader, train_loss)], 
-            epochs=num_epochs, 
-            # tensorboard=True, 
-            # learning_rate=learning_rate, 
-            evaluator=evaluator,
+            epochs=num_epochs,
+            evaluation_steps=val_evaluation_steps,
+            optimizer_params={"lr": learning_rate},
+            evaluator=val_evaluator,
 		)
 
         self.writer.close()

@@ -32,12 +32,10 @@ class BERTClassifier(nn.Module):
         self.sent_embed_linear = nn.Linear(num_vectors_concatenated * self.hidden_size, num_classes)
 
     def forward(self, *args, **kwargs):
-        labels_in_kwargs = "labels" in kwargs
-        if labels_in_kwargs:
+        if "labels" in kwargs:
             outputs, logits = self.get_sentence_embedding(*args, **kwargs)
             return outputs, logits
         else:
-            labels = kwargs.pop("labels", None)
             outputs = self.bert(*args, **kwargs)
             sentence_embedding = outputs["sentence_embedding"]
             x = self.dropout(sentence_embedding)
