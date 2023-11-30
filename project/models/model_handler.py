@@ -1,9 +1,8 @@
 import torch
 import os
 from torch import nn
-from transformers import BertTokenizer, get_linear_schedule_with_warmup
+from transformers import BertTokenizer
 from torchmetrics import F1Score, Precision, Recall, ConfusionMatrix
-from sklearn.metrics import accuracy_score, classification_report
 from sentence_transformers.util import batch_to_device
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter

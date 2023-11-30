@@ -9,33 +9,6 @@ from torch.utils.data import DataLoader
 from sentence_transformers import InputExample
 
 
-class DataObj(torch.utils.data.Dataset):
-    def __init__(self, texts, labels, max_length, tokenizer):
-        self.texts = texts
-        self.labels = labels
-        self.max_length = max_length
-        self.tokenizer = tokenizer
-        
-    def __len__(self):
-        return len(self.texts)
-    
-    def __getitem__(self, idx):
-        text = self.texts[idx]
-        label = self.labels[idx]
-        encoding = self.tokenizer(
-            text, 
-            return_tensors='pt', 
-            max_length=self.max_length, 
-            padding='max_length', 
-            truncation=True
-        )
-        
-        return {
-            'input_ids': encoding['input_ids'].flatten(), 
-            'attention_mask': encoding['attention_mask'].flatten(), 
-            'label': torch.tensor(label)
-        }
-
 class CovidDataLoader:
     def __init__(self) -> None:
         self.dataset = None
