@@ -10,6 +10,7 @@ class SentenceTransformerTensorboard(SentenceTransformer):
     def __init__(
 		self, 
         writer: SummaryWriter,
+        best_model_output_path: Optional[str] = None,
         model_name_or_path: Optional[str] = None,
 		modules: Optional[Iterable[nn.Module]] = None,
 		device: Optional[str] = None,
@@ -18,22 +19,14 @@ class SentenceTransformerTensorboard(SentenceTransformer):
 	):
         super().__init__(model_name_or_path, modules, device, cache_folder, use_auth_token)
         self.writer = writer
+        self.best_model_output_path = best_model_output_path
 
     def _eval_during_training(self, evaluator, output_path, save_best_model, epoch, steps, callback):
 		# super._eval_during_training(evaluator, output_path, save_best_model, epoch, steps, callback)
-        eval_path = output_path
-        if output_path is not None:
-            os.makedirs(output_path, exist_ok=True)
-            eval_path = os.path.join(output_path, "eval")
-            os.makedirs(eval_path, exist_ok=True)
-
-        if evaluator is not None:
-            score = evaluator(self, output_path=eval_path, epoch=epoch, steps=steps)
-            if callback is not None:
-                callback(score, epoch, steps)
-            if score > self.best_score:
-                self.best_score = score
-                if save_best_model:
-                    self.save(output_path)
-		
-        self.writer.add_scalar('Validation/Accuracy', score, steps)
+        f1_score = evaluator(self, epoch=epoch, steps=steps)
+        if callback is not None:
+            callback(f1_score, epoch, steps)
+        if f1_score > self.best_score:
+            self.best_score = f1_score
+            if save_best_model:
+                self.save(self.best_model_output_path)

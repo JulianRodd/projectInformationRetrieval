@@ -3,13 +3,15 @@ from torch import nn
 from sentence_transformers import SentenceTransformer
 from .sentence_transformer_tensorboard import SentenceTransformerTensorboard
 
-#TODO tensorboard support. Inherit from SentenceTransformer and change SentenceTransformer._eval_during_training
+
 class BERTClassifier(nn.Module):
     def __init__(
             self, 
             bert_model_name, 
             num_classes, 
             writer,
+            best_model_output_path,
+            lora_config,
             concatenation_args: dict = {
                 "concatenation_sent_rep": True,
                 "concatenation_sent_difference": True,
@@ -17,7 +19,7 @@ class BERTClassifier(nn.Module):
             }
     ):
         super(BERTClassifier, self).__init__()
-        self.bert = SentenceTransformerTensorboard(model_name_or_path=bert_model_name, writer=writer)
+        self.bert = SentenceTransformerTensorboard(model_name_or_path=bert_model_name, writer=writer, best_model_output_path=best_model_output_path)
         self.dropout = nn.Dropout(0.1)
         self.hidden_size = self.bert[0].auto_model.base_model.config.hidden_size
         self.fc = nn.Linear(self.hidden_size, num_classes)
@@ -30,6 +32,9 @@ class BERTClassifier(nn.Module):
         if concatenation_args["concatenation_sent_multiplication"]:
             num_vectors_concatenated += 1
         self.sent_embed_linear = nn.Linear(num_vectors_concatenated * self.hidden_size, num_classes)
+
+        if lora_config is not None:
+            raise ValueError("Normal bert model got an unexpected lora config ):")
 
     def forward(self, *args, **kwargs):
         if "labels" in kwargs:
