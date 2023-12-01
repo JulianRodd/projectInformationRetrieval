@@ -28,6 +28,12 @@ with open("project/config.json", "r") as file:
     training_configs = json.load(file)
 
 for training_config in training_configs:
+    if training_config.get('balance', False):
+        # replace the dataloaders with the balanced data
+        pass
+    else:
+        # use unbalanced data
+        pass
 
     run_name = f"{training_config.get('name')}_lr:{training_config['learning_rate']}_e:{training_config['num_epochs']}_s:{training_config['scheduler']}"
 
