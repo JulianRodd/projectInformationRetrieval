@@ -6,12 +6,11 @@ from sklearn.metrics import accuracy_score, classification_report
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
-
 class Model:
     def __init__(
         self,
         classifier,
-        device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
+        device=torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"),
         model_name: str = "sentence-transformers/msmarco-bert-base-dot-v5",
         run_name: str = "default",
         num_classes: int = 3,
