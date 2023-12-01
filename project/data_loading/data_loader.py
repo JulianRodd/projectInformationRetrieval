@@ -7,7 +7,7 @@ import math
 import os
 from torch.utils.data import DataLoader
 from sentence_transformers import InputExample
-
+from sklearn.model_selection import StratifiedShuffleSplit
 
 class CovidDataLoader:
     def __init__(self) -> None:
@@ -16,6 +16,7 @@ class CovidDataLoader:
     def load_data(self, trec_covid_csv_path):
       if os.path.exists(trec_covid_csv_path):
           self.dataset = pd.read_csv(trec_covid_csv_path, index_col="doc_query_key")
+          self.dataset = self.dataset[self.dataset['qrel_score'].isin([0, 1, 2])]
       else:
           trec_covid_documents = pd.DataFrame(datasets.load_dataset("BeIR/trec-covid", "corpus", cache_dir='./data/cache')["corpus"])
           trec_covid_queries = pd.DataFrame(datasets.load_dataset("BeIR/trec-covid-generated-queries", "train", cache_dir='./data/cache')["train"])
@@ -57,15 +58,15 @@ class CovidDataLoader:
               os.makedirs("/".join(trec_covid_csv_path.split("/")[:-1]))
           self.dataset.to_csv(trec_covid_csv_path)
 
-    def split_data(self, train, val, test):
-        querie_id_set = list(self.dataset["query_id"].unique())
-        train_interval_queries = [0, math.floor(len(querie_id_set)*train)]
-        val_interval_queries = [math.floor(len(querie_id_set)*train), math.floor(len(querie_id_set)*(val+train))]
-        test_interval_queries = [math.floor(len(querie_id_set)*(val+train)), 0]
-        random.shuffle(querie_id_set)
-        train_queries = querie_id_set[:train_interval_queries[1]]
-        val_queries = querie_id_set[val_interval_queries[0]:val_interval_queries[1]]
-        test_queries = querie_id_set[test_interval_queries[0]:]
+    def split_data(self, train=0.6, val=0.2, test=0.2, balanced=False):
+        query_id_set = list(self.dataset["query_id"].unique())
+        train_interval_queries = [0, math.floor(len(query_id_set)*train)]
+        val_interval_queries = [math.floor(len(query_id_set)*train), math.floor(len(query_id_set)*(val+train))]
+        test_interval_queries = [math.floor(len(query_id_set)*(val+train)), 0]
+        random.shuffle(query_id_set)
+        train_queries = query_id_set[:train_interval_queries[1]]
+        val_queries = query_id_set[val_interval_queries[0]:val_interval_queries[1]]
+        test_queries = query_id_set[test_interval_queries[0]:]
         
         text_set = list(self.dataset["doc_id"].unique())
         train_interval_texts = [0, math.floor(len(text_set)*train)]
@@ -79,7 +80,96 @@ class CovidDataLoader:
         train_set = self.dataset[self.dataset['query_id'].isin(train_queries)][self.dataset['doc_id'].isin(train_texts)]
         val_set = self.dataset[self.dataset['query_id'].isin(val_queries)][self.dataset['doc_id'].isin(val_texts)]
         test_set = self.dataset[self.dataset['query_id'].isin(test_queries)][self.dataset['doc_id'].isin(test_texts)]
+        
+        
+        if balanced:
+            return self.balance_splits(train_set, val_set, test_set)
+          
         return train_set, val_set, test_set
+      
+    def balance_splits(self, train_set, val_set, test_set):
+      # Calculate class ratios in the original dataset
+      original_ratios = self.dataset['qrel_score'].value_counts(normalize=True)
+
+      # Calculate class ratios in each split
+      train_ratios = train_set['qrel_score'].value_counts(normalize=True)
+      val_ratios = val_set['qrel_score'].value_counts(normalize=True)
+      test_ratios = test_set['qrel_score'].value_counts(normalize=True)
+      
+      train_ratios = train_ratios.reindex(original_ratios.index, fill_value=0)
+      val_ratios = val_ratios.reindex(original_ratios.index, fill_value=0)
+      test_ratios = test_ratios.reindex(original_ratios.index, fill_value=0)
+
+      # Identify overrepresented and underrepresented classes in each split
+      overrepresented_train = train_ratios[train_ratios > original_ratios].index
+      underrepresented_train = train_ratios[train_ratios < original_ratios].index
+
+      overrepresented_val = val_ratios[val_ratios > original_ratios].index
+      underrepresented_val = val_ratios[val_ratios < original_ratios].index
+      
+      overrepresented_test = test_ratios[test_ratios > original_ratios].index
+      underrepresented_test = test_ratios[test_ratios < original_ratios].index
+
+      # Move entries from overrepresented to underrepresented classes
+      for class_ in overrepresented_train:
+          # Find entries of this class in the train set
+          entries = train_set[train_set['qrel_score'] == class_]
+
+          # Calculate how many entries to move
+          num_to_move = int((train_ratios[class_] - original_ratios[class_]) * len(train_set))
+
+          # Move entries from train set to validation and test sets
+          for _ in range(num_to_move):
+            entry = entries.sample(1)
+            entries = entries.drop(entry.index)
+            if entry['query_id'].values[0] not in val_set['query_id'].values and entry['doc_id'].values[0] not in val_set['doc_id'].values:
+                train_set = train_set.drop(entry.index)
+                test_set = pd.concat([test_set, entry], ignore_index=True)
+              
+            elif entry['query_id'].values[0] not in test_set['query_id'].values and entry['doc_id'].values[0] not in test_set['doc_id'].values:
+                train_set = train_set.drop(entry.index)
+                val_set = pd.concat([val_set, entry], ignore_index=True)
+          
+      
+      for class_ in overrepresented_val:
+          # Find entries of this class in the train set
+          entries = val_set[val_set['qrel_score'] == class_]
+
+          # Calculate how many entries to move
+          num_to_move = int((val_ratios[class_] - original_ratios[class_]) * len(val_set))
+
+          # Move entries from train set to validation and test sets
+          for _ in range(num_to_move):
+            entry = entries.sample(1)
+            entries = entries.drop(entry.index)
+            if entry['query_id'].values[0] not in test_set['query_id'].values and entry['doc_id'].values[0] not in test_set['doc_id'].values:
+                val_set = val_set.drop(entry.index)
+                train_set = pd.concat([train_set, entry], ignore_index=True)
+              
+            elif entry['query_id'].values[0] not in train_set['query_id'].values and entry['doc_id'].values[0] not in train_set['doc_id'].values:
+                val_set = val_set.drop(entry.index)
+                test_set = pd.concat([test_set, entry], ignore_index=True)
+          
+      
+      for class_ in overrepresented_test:
+          # Find entries of this class in the train set
+          entries = test_set[test_set['qrel_score'] == class_]
+
+          # Calculate how many entries to move
+          num_to_move = int((test_ratios[class_] - original_ratios[class_]) * len(test_set))
+
+          # Move entries from train set to validation and test sets
+          for _ in range(num_to_move):
+            entry = entries.sample(1)
+            entries = entries.drop(entry.index)
+            if entry['query_id'].values[0] not in train_set['query_id'].values and entry['doc_id'].values[0] not in train_set['doc_id'].values:
+                test_set = test_set.drop(entry.index)
+                val_set = pd.concat([val_set, entry], ignore_index=True)
+            elif entry['query_id'].values[0] not in val_set['query_id'].values and entry['doc_id'].values[0] not in val_set['doc_id'].values:
+                test_set = test_set.drop(entry.index)
+                train_set = pd.concat([train_set, entry], ignore_index=True)
+          
+      return train_set, val_set, test_set
     
     def make_dataloader(self, df: pd.DataFrame, shuffle=True, batch_size=16):
         input_examples = []
@@ -88,10 +178,48 @@ class CovidDataLoader:
             input_examples.append(InputExample(texts=[query, doc], label=label))
         return DataLoader(input_examples, shuffle=shuffle, batch_size=batch_size)
       
+    def check_unique(self, df_1, df_2):
+        queries_1 = set(df_1["query_id"])
+        queries_2 = set(df_2["query_id"])
+        texts_1 = set(df_1["doc_id"])
+        texts_2 = set(df_2["doc_id"])
+        query_intersect = queries_1.intersection(queries_2)
+        text_intersect = texts_1.intersection(texts_2)
+        return len(query_intersect), len(text_intersect)
       
-    def get_class_counts(self, df: pd.DataFrame):
+    def make_dataloaders(self,shuffle=True, batch_size=32, train=0.6, val=0.2, test=0.2, balanced=False):
+      train_set, val_set, test_set = self.split_data(train, val, test, balanced)
+
+      self.check_unique(train_set, val_set)
+      print("Intersection between train and val set (queries, texts): ", self.check_unique(train_set, val_set))
+      self.check_unique(val_set, test_set)
+      print("Intersection between val and test set (queries, texts): ", self.check_unique(val_set, test_set))
+      self.check_unique(train_set, test_set)
+      print("Intersection between train and test set (queries, texts): ", self.check_unique(train_set, test_set))
+      
+      print("Train set qrel ratio:")
+      print(self.get_class_counts(train_set))
+      print("Val set qrel ratio:")
+      print(self.get_class_counts(val_set))
+      print("Test set qrel ratio:")
+      print(self.get_class_counts(test_set))
+      
+      print("Total amount of rows lost in the split: ", len(self.dataset) - len(train_set) - len(val_set) - len(test_set))
+
+      train_dataloader = self.make_dataloader(train_set, shuffle, batch_size) 
+      val_dataloader = self.make_dataloader(val_set, shuffle, batch_size) 
+      test_dataloader = self.make_dataloader(test_set, shuffle, batch_size)
+      
+      return train_dataloader, val_dataloader, test_dataloader
+    
+    def get_class_counts(self, df: pd.DataFrame = None):
+      if df is None:
+        return self.dataset["qrel_score"].value_counts().to_dict()
+      else:
         return df["qrel_score"].value_counts().to_dict()
       
-    def balance_classes_by_removing_samples(self, df: pd.DataFrame, num_samples_per_class):
-        df = df.groupby("qrel_score").apply(lambda x: x.sample(num_samples_per_class, replace=True)).reset_index(drop=True)
-        return df
+    def balance_classes_by_removing_samples(self):
+        # Function that balances the classes by removing samples from the majority classes, makes sure all classes have the same amount of samples
+        class_counts = self.get_class_counts()
+        num_samples_per_class = min(class_counts.values())
+        self.dataset = self.dataset.groupby("qrel_score").apply(lambda x: x.sample(num_samples_per_class, replace=False)).reset_index(drop=True)

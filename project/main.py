@@ -19,30 +19,25 @@ trec_covid_csv_path = os.path.join(data_dir, "trec_covid_beir.csv")
 
 dataPreprocessor = CovidDataLoader()
 dataPreprocessor.load_data(trec_covid_csv_path=trec_covid_csv_path)
-train_set, val_set, test_set = dataPreprocessor.split_data(train=0.6, val=0.2, test=0.2)
-train_dataloader = dataPreprocessor.make_dataloader(train_set, shuffle=True, batch_size=32) 
-val_dataloader = dataPreprocessor.make_dataloader(val_set, shuffle=True, batch_size=32) 
-test_dataloader = dataPreprocessor.make_dataloader(test_set, shuffle=True, batch_size=32)
 
-
-# print counts of each class in each set
-print("Train set:")
-print(dataPreprocessor.get_class_counts(train_set))
-print("Val set:")
-print(dataPreprocessor.get_class_counts(val_set))
-print("Test set:")
-print(dataPreprocessor.get_class_counts(test_set))
+train_dataloader_unbalanced, val_dataloader_unbalanced, test_dataloader_unbalanced = dataPreprocessor.make_dataloaders(shuffle=True, batch_size=32, train=0.6, val=0.2, test=0.2)
+dataPreprocessor.balance_classes_by_removing_samples()
+balanced_train_dataloader, balanced_val_dataloader, balanced_test_dataloader = dataPreprocessor.make_dataloaders(shuffle=True, batch_size=32, train=0.6, val=0.2, test=0.2, balanced = True)
 
 with open("project/config.json", "r") as file:
     training_configs = json.load(file)
 
 for training_config in training_configs:
-    if training_config.get('balance', False):
-        # replace the dataloaders with the balanced data
-        pass
+    if training_config.get('balance', True):
+        # use balanced data
+        train_dataloader = balanced_train_dataloader
+        val_dataloader = balanced_val_dataloader
+        test_dataloader = balanced_test_dataloader
     else:
         # use unbalanced data
-        pass
+        train_dataloader = train_dataloader_unbalanced
+        val_dataloader = val_dataloader_unbalanced
+        test_dataloader = test_dataloader_unbalanced
 
     run_name = f"{training_config.get('name')}_lr:{training_config['learning_rate']}_e:{training_config['num_epochs']}_s:{training_config['scheduler']}"
 
