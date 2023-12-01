@@ -87,3 +87,11 @@ class CovidDataLoader:
             # input_examples.append(InputExample(texts=[query, doc]))
             input_examples.append(InputExample(texts=[query, doc], label=label))
         return DataLoader(input_examples, shuffle=shuffle, batch_size=batch_size)
+      
+      
+    def get_class_counts(self, df: pd.DataFrame):
+        return df["qrel_score"].value_counts().to_dict()
+      
+    def balance_classes_by_removing_samples(self, df: pd.DataFrame, num_samples_per_class):
+        df = df.groupby("qrel_score").apply(lambda x: x.sample(num_samples_per_class, replace=True)).reset_index(drop=True)
+        return df

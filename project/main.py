@@ -24,6 +24,15 @@ train_dataloader = dataPreprocessor.make_dataloader(train_set, shuffle=True, bat
 val_dataloader = dataPreprocessor.make_dataloader(val_set, shuffle=True, batch_size=32) 
 test_dataloader = dataPreprocessor.make_dataloader(test_set, shuffle=True, batch_size=32)
 
+
+# print counts of each class in each set
+print("Train set:")
+print(dataPreprocessor.get_class_counts(train_set))
+print("Val set:")
+print(dataPreprocessor.get_class_counts(val_set))
+print("Test set:")
+print(dataPreprocessor.get_class_counts(test_set))
+
 with open("project/config.json", "r") as file:
     training_configs = json.load(file)
 
