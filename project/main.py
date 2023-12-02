@@ -24,7 +24,7 @@ train_dataloader = dataPreprocessor.make_dataloader(train_set, shuffle=True, bat
 val_dataloader = dataPreprocessor.make_dataloader(val_set, shuffle=True, batch_size=32) 
 test_dataloader = dataPreprocessor.make_dataloader(test_set, shuffle=True, batch_size=32)
 
-with open("project/config.json", "r") as file:
+with open("project/config_part2.json", "r") as file:
     training_configs = json.load(file)
 
 for training_config in training_configs:
@@ -34,7 +34,8 @@ for training_config in training_configs:
     if training_config.get("name") == "bert":
         bert = ModelHandler(BERTClassifier, run_name=run_name, best_model_output_path='saved_models/tuned_bert_model')
     elif training_config.get("name") == "peft_bert":
-        bert = ModelHandler(PEFTBERTClassifier, run_name=run_name, best_model_output_path='saved_models/tuned_peft_model', freeze=False)
+        run_name = run_name + "_lora:" + str(training_config["lora_config"]["r"])
+        bert = ModelHandler(PEFTBERTClassifier, run_name=run_name, best_model_output_path='saved_models/tuned_peft_model', lora_config=training_config['lora_config'])
     else:
         raise ValueError(f"name '{training_config['name']}' in config not allowed.")
 

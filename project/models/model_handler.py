@@ -103,8 +103,8 @@ class ModelHandler:
         confmat = confmat_obj(all_predictions, all_label_ids)
 
         return {
-            "f1_score": f1_score,
-            "precision": precision,
-            "recall": recall,
-            "confmat": confmat
+            "f1_score": float(f1_score),
+            "precision": float(precision),
+            "recall": float(recall),
+            "confmat": confmat.tolist()
         }
