@@ -16,7 +16,7 @@ class ModelHandler:
     def __init__(
         self,
         classifier: nn.Module,
-        device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
+        device=torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"),
         model_name: str = "sentence-transformers/msmarco-bert-base-dot-v5",
         best_model_output_path: str = None,
         run_name: str = "default",
